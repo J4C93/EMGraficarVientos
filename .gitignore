@@ -1,0 +1,25 @@
+# Carpetas de salida
+outputs/
+plots/
+dataprocesada/
+
+# Datos crudos
+raw/
+
+# Backups
+*.rar
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode/
+
+# Entornos
+venv/
+.env
+
+# DB
+.ffs_db
