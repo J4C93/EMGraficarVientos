@@ -3,12 +3,19 @@ import pandas as pd
 
 from procesamiento.pipeline.clean_ema import clean_ema
 
+
+from procesamiento.pipeline.extraer_semana import extraer_semana
+from procesamiento.pipeline.promedios_semanales import promedios_semanales
+
+
+
 BASE_DIR = Path(__file__).resolve().parent
 
 DATA_DIR = BASE_DIR / "dataprocesada"
 OUT_DIR = BASE_DIR / "outputs"
 
 OUT_DIR.mkdir(exist_ok=True)
+
 
 
 # -------------------------------
@@ -40,6 +47,8 @@ def seleccionar_modo():
 # -------------------------------
 # Selección estaciones
 # -------------------------------
+
+
 def seleccionar_estaciones():
 
     estaciones = sorted([p for p in DATA_DIR.iterdir() if p.is_dir()])
@@ -50,14 +59,21 @@ def seleccionar_estaciones():
         print(f"{i}. {est.name}")
 
     seleccion = input("\nSeleccione estaciones (ej: 1 o 1,3): ")
+
+
+
+
     indices = [int(x.strip()) - 1 for x in seleccion.split(",")]
 
     return [estaciones[i] for i in indices]
 
 
+
 # -------------------------------
 # Selección semana (solo semanal)
 # -------------------------------
+
+
 def seleccionar_semana(df):
 
     df = df.copy()
@@ -83,12 +99,17 @@ def seleccionar_semana(df):
     return int(semanas.iloc[sel].year), int(semanas.iloc[sel].week)
 
 
+
 # -------------------------------
 # Pipeline principal
 # -------------------------------
 def procesar_estaciones():
 
     modo, extraer_func, promedio_func = seleccionar_modo()
+
+def procesar_estaciones():
+
+
     estaciones = seleccionar_estaciones()
 
     for est_path in estaciones:
@@ -103,6 +124,7 @@ def procesar_estaciones():
         if df_clean.empty:
             print("Sin datos")
             continue
+
 
         # -----------------------
         # MODO SEMANAL
@@ -133,6 +155,24 @@ def procesar_estaciones():
         print(f"Archivo generado: {path_data}")
 
         prom.to_csv(path_prom, index=False)
+
+        year_sel, week_sel = seleccionar_semana(df_clean)
+
+        df_semana = extraer_semana(df_clean, year_sel, week_sel)
+
+        path_semana = out_est / "viento_ultimos_7_dias.csv"
+
+        df_semana.to_csv(path_semana, index=False)
+
+        print(f"Archivo generado: {path_semana}")
+
+        prom = promedios_semanales(df_clean, year_sel, week_sel)
+
+        path_prom = out_est / "Promedios_Semanales_Viento_TSM.csv"
+
+        prom.to_csv(path_prom, index=False)
+
+
         print(f"Archivo generado: {path_prom}")
 
 
