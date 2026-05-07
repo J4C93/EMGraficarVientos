@@ -107,9 +107,6 @@ def procesar_estaciones():
 
     modo, extraer_func, promedio_func = seleccionar_modo()
 
-def procesar_estaciones():
-
-
     estaciones = seleccionar_estaciones()
 
     for est_path in estaciones:
